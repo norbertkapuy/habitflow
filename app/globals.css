@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+@theme {
+  /* Light theme colors */
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(240 10% 3.9%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(240 10% 3.9%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(240 10% 3.9%);
+  --color-primary: hsl(217 91% 60%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(240 4.8% 95.9%);
+  --color-secondary-foreground: hsl(240 5.9% 10%);
+  --color-muted: hsl(240 4.8% 95.9%);
+  --color-muted-foreground: hsl(240 3.8% 46.1%);
+  --color-accent: hsl(240 4.8% 95.9%);
+  --color-accent-foreground: hsl(240 5.9% 10%);
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+  --color-border: hsl(240 5.9% 90%);
+  --color-input: hsl(240 5.9% 90%);
+  --color-ring: hsl(217 91% 60%);
+  --radius: 0.5rem;
+  
+  /* Chart colors for light theme */
+  --chart-1: hsl(217 91% 60%);
+  --chart-2: hsl(142 76% 36%);
+  --chart-3: hsl(47 96% 48%);
+  --chart-4: hsl(280 100% 65%);
+  --chart-5: hsl(12 76% 61%);
+  
+  /* Enhanced shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.dark {
+  /* Main surfaces - dark gray with subtle blue tint for warmth */
+  --color-background: hsl(220 13% 9%);
+  --color-foreground: hsl(220 13% 95%);
+  
+  /* Cards and elevated surfaces */
+  --color-card: hsl(220 13% 11%);
+  --color-card-foreground: hsl(220 13% 95%);
+  --color-popover: hsl(220 13% 12%);
+  --color-popover-foreground: hsl(220 13% 95%);
+  
+  /* Primary brand color - modern blue accent */
+  --color-primary: hsl(217 91% 60%);
+  --color-primary-foreground: hsl(220 13% 9%);
+  
+  /* Secondary and muted colors */
+  --color-secondary: hsl(220 13% 15%);
+  --color-secondary-foreground: hsl(220 9% 89%);
+  --color-muted: hsl(220 13% 15%);
+  --color-muted-foreground: hsl(220 9% 70%);
+  --color-accent: hsl(220 13% 15%);
+  --color-accent-foreground: hsl(220 9% 89%);
+  
+  /* Destructive actions - softer red for dark theme */
+  --color-destructive: hsl(0 75% 60%);
+  --color-destructive-foreground: hsl(220 13% 95%);
+  
+  /* Borders and inputs */
+  --color-border: hsl(220 13% 18%);
+  --color-input: hsl(220 13% 15%);
+  --color-ring: hsl(217 91% 60%);
+  
+  /* Chart colors optimized for dark theme */
+  --chart-1: hsl(217 91% 60%);
+  --chart-2: hsl(142 76% 55%);
+  --chart-3: hsl(47 96% 60%);
+  --chart-4: hsl(280 100% 70%);
+  --chart-5: hsl(12 76% 65%);
+}
+
+/* Enhanced shadow utilities */
+.shadow-xs {
+  box-shadow: var(--shadow-xs);
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Dark theme specific enhancements */
+.dark .shadow-sm {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+}
+
+* {
+  border-color: theme(colors.border);
+}
+
+/* Smooth theme transitions */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body {
+  background-color: theme(colors.background);
+  color: theme(colors.foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Enhanced dark theme styling */
+.dark body {
+  background: linear-gradient(135deg, hsl(220 13% 9%) 0%, hsl(220 13% 7%) 100%);
+  min-height: 100vh;
+}
+
+/* Improved scrollbar for dark theme */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: hsl(220 13% 11%);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(220 13% 20%);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(220 13% 25%);
+}
+
+/* Enhanced focus rings for dark theme */
+.dark *:focus-visible {
+  outline: 2px solid hsl(217 91% 60%);
+  outline-offset: 2px;
+}
+
+/* Better selection colors */
+.dark ::selection {
+  background: hsl(217 91% 60% / 0.3);
+  color: hsl(220 13% 95%);
+}
+
+/* Enhanced dropdown and popover positioning */
+[data-radix-popper-content-wrapper] {
+  z-index: 50 !important;
+}
+
+/* Ensure dropdown menus appear above other content */
+[data-slot="dropdown-menu-content"],
+[data-slot="select-content"],
+[data-slot="tooltip-content"] {
+  z-index: 50 !important;
+}
+
+/* Fix menu positioning on mobile */
+@media (max-width: 768px) {
+  [data-slot="dropdown-menu-content"],
+  [data-slot="select-content"] {
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 4rem);
+  }
+}
+
+/* Color Scheme Variations */
+.color-colorful {
+  --color-primary: hsl(280 100% 60%);
+  --chart-1: hsl(280 100% 60%);
+  --chart-2: hsl(340 75% 60%);
+  --chart-3: hsl(45 95% 55%);
+  --chart-4: hsl(120 60% 50%);
+  --chart-5: hsl(200 80% 55%);
+}
+
+.color-minimal {
+  --color-primary: hsl(0 0% 40%);
+  --color-muted: hsl(0 0% 96%);
+  --color-accent: hsl(0 0% 94%);
+  --chart-1: hsl(0 0% 60%);
+  --chart-2: hsl(0 0% 50%);
+  --chart-3: hsl(0 0% 40%);
+  --chart-4: hsl(0 0% 30%);
+  --chart-5: hsl(0 0% 20%);
+}
+
+.color-minimal.dark {
+  --color-primary: hsl(0 0% 80%);
+  --color-muted: hsl(0 0% 12%);
+  --color-accent: hsl(0 0% 15%);
+}
+
+.color-high-contrast {
+  --color-primary: hsl(240 100% 50%);
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(0 0% 0%);
+  --color-muted: hsl(0 0% 95%);
+  --color-muted-foreground: hsl(0 0% 20%);
+}
+
+.color-high-contrast.dark {
+  --color-primary: hsl(60 100% 70%);
+  --color-background: hsl(0 0% 0%);
+  --color-foreground: hsl(0 0% 100%);
+  --color-muted: hsl(0 0% 10%);
+  --color-muted-foreground: hsl(0 0% 80%);
+}
+
+/* Animation Controls */
+.no-animations *,
+.no-animations *::before,
+.no-animations *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Compact Mode */
+.compact-mode {
+  --spacing-factor: 0.75;
+}
+
+.compact-mode .space-y-6 > * + * {
+  margin-top: calc(1.5rem * var(--spacing-factor));
+}
+
+.compact-mode .space-y-4 > * + * {
+  margin-top: calc(1rem * var(--spacing-factor));
+}
+
+.compact-mode .gap-6 {
+  gap: calc(1.5rem * var(--spacing-factor));
+}
+
+.compact-mode .gap-4 {
+  gap: calc(1rem * var(--spacing-factor));
+}
+
+.compact-mode .p-6 {
+  padding: calc(1.5rem * var(--spacing-factor));
+}
+
+.compact-mode .p-4 {
+  padding: calc(1rem * var(--spacing-factor));
+}
+
+.compact-mode .mb-8 {
+  margin-bottom: calc(2rem * var(--spacing-factor));
+}
+
+.compact-mode .mb-6 {
+  margin-bottom: calc(1.5rem * var(--spacing-factor));
+}
+
+.compact-mode .mb-4 {
+  margin-bottom: calc(1rem * var(--spacing-factor));
+}
