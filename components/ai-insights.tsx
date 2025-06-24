@@ -114,14 +114,14 @@ export function AIInsights({ className }: AIInsightsProps) {
 
   if (!isEnabled) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-purple-500" />
+      <Card className={`${className} border-dashed border-2 border-muted-foreground/25`}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+            <Brain className="w-4 h-4 text-purple-500" />
             AI Insights
           </CardTitle>
-          <CardDescription>
-            Enable AI features in settings to get intelligent habit analysis
+          <CardDescription className="text-xs">
+            Enable AI in settings for analysis
           </CardDescription>
         </CardHeader>
       </Card>
@@ -130,65 +130,59 @@ export function AIInsights({ className }: AIInsightsProps) {
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-purple-500" />
-              AI Insights
-            </CardTitle>
-            <CardDescription>
-              Intelligent analysis of your habit patterns and performance
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex border rounded-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-medium">
+            <Brain className="w-4 h-4 text-purple-500" />
+            AI Insights
+          </CardTitle>
+          <div className="flex items-center gap-1">
+            <div className="flex border rounded-md">
               {(['week', 'month', 'quarter'] as const).map((timeframe) => (
                 <Button
                   key={timeframe}
                   variant={activeTimeframe === timeframe ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setActiveTimeframe(timeframe)}
-                  className="rounded-none first:rounded-l-lg last:rounded-r-lg"
+                  className="rounded-none first:rounded-l-md last:rounded-r-md h-6 px-2 text-xs"
                 >
                   {timeframe.charAt(0).toUpperCase() + timeframe.slice(1)}
                 </Button>
               ))}
             </div>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => loadInsights('insights')}
               disabled={loading}
+              className="h-6 w-6 p-0"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0 max-h-32 overflow-y-auto">
         {error && (
-          <div className="text-sm text-red-600 dark:text-red-400 mb-4 p-3 bg-red-50 dark:bg-red-950 rounded-lg">
+          <div className="text-xs text-red-600 dark:text-red-400 mb-2 p-2 bg-red-50 dark:bg-red-950 rounded-md">
             {error}
           </div>
         )}
 
         {loading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Brain className="w-5 h-5 animate-pulse" />
-              <span>Analyzing your habits...</span>
+          <div className="flex items-center justify-center py-4">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Brain className="w-4 h-4 animate-pulse" />
+              <span>Analyzing...</span>
             </div>
           </div>
         )}
 
-        <div className="w-full">
-          <div className="flex border-b mb-4">
+        <div className="w-full pr-1">
+          <div className="flex border-b mb-2">
             {[
               { key: 'overview', label: 'Overview' },
-              { key: 'patterns', label: 'Patterns' },
-              { key: 'correlations', label: 'Correlations' },
-              { key: 'predictions', label: 'Predictions' }
+              { key: 'patterns', label: 'Patterns' }
             ].map((tab) => (
               <Button
                 key={tab.key}
@@ -196,10 +190,9 @@ export function AIInsights({ className }: AIInsightsProps) {
                 size="sm"
                 onClick={() => {
                   setActiveTab(tab.key as any)
-                  if (tab.key === 'correlations') loadInsights('correlations')
-                  if (tab.key === 'predictions') loadInsights('predictions')
+                  if (tab.key === 'patterns') loadInsights('correlations')
                 }}
-                className={`rounded-none border-b-2 ${
+                className={`rounded-none border-b-2 h-7 px-3 text-xs ${
                   activeTab === tab.key 
                     ? 'border-primary text-primary' 
                     : 'border-transparent'
@@ -211,33 +204,30 @@ export function AIInsights({ className }: AIInsightsProps) {
           </div>
 
           {activeTab === 'overview' && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-2">
               <AnimatePresence>
-                {insights.slice(0, 5).map((insight, index) => (
+                {insights.map((insight, index) => (
                   <motion.div
                     key={insight.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="border rounded-lg p-4 space-y-2"
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="border rounded-md p-2 bg-background/50"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className={getInsightColor(insight.type)}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-1">
+                        <Badge variant="secondary" className={`${getInsightColor(insight.type)} text-xs h-4 px-1`}>
                           {getInsightIcon(insight.type)}
                           {insight.type}
                         </Badge>
-                        <span className={`text-sm font-medium ${getConfidenceColor(insight.confidence)}`}>
+                        <span className={`text-xs font-medium ${getConfidenceColor(insight.confidence)}`}>
                           {Math.round(insight.confidence * 100)}%
                         </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {insight.createdAt.toLocaleDateString()}
-                      </span>
                     </div>
-                    <h4 className="font-medium">{insight.title}</h4>
-                    <p className="text-sm text-muted-foreground">{insight.description}</p>
+                    <h4 className="font-medium text-sm mb-0.5">{insight.title}</h4>
+                    <p className="text-xs text-muted-foreground truncate">{insight.description}</p>
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -245,95 +235,29 @@ export function AIInsights({ className }: AIInsightsProps) {
           )}
 
           {activeTab === 'patterns' && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-2">
               <AnimatePresence>
                 {groupedInsights.pattern?.map((insight, index) => (
                   <motion.div
                     key={insight.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="border rounded-lg p-4 space-y-2"
+                    transition={{ delay: index * 0.05 }}
+                    className="border rounded-md p-2 bg-background/50"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-blue-500" />
-                        <span className={`text-sm font-medium ${getConfidenceColor(insight.confidence)}`}>
-                          {Math.round(insight.confidence * 100)}% confidence
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <BarChart3 className="w-3 h-3 text-blue-500" />
+                      <span className={`text-xs font-medium ${getConfidenceColor(insight.confidence)}`}>
+                        {Math.round(insight.confidence * 100)}%
+                      </span>
                     </div>
-                    <h4 className="font-medium">{insight.title}</h4>
-                    <p className="text-sm text-muted-foreground">{insight.description}</p>
+                    <h4 className="font-medium text-sm mb-0.5">{insight.title}</h4>
+                    <p className="text-xs text-muted-foreground truncate">{insight.description}</p>
                   </motion.div>
                 )) || (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <BarChart3 className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No patterns detected yet</p>
-                  </div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {activeTab === 'correlations' && (
-            <div className="space-y-4 mt-4">
-              <AnimatePresence>
-                {groupedInsights.correlation?.map((insight, index) => (
-                  <motion.div
-                    key={insight.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="border rounded-lg p-4 space-y-2"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-purple-500" />
-                        <span className={`text-sm font-medium ${getConfidenceColor(insight.confidence)}`}>
-                          {Math.round(insight.confidence * 100)}% confidence
-                        </span>
-                      </div>
-                    </div>
-                    <h4 className="font-medium">{insight.title}</h4>
-                    <p className="text-sm text-muted-foreground">{insight.description}</p>
-                  </motion.div>
-                )) || (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No correlations found yet</p>
-                  </div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {activeTab === 'predictions' && (
-            <div className="space-y-4 mt-4">
-              <AnimatePresence>
-                {groupedInsights.prediction?.map((insight, index) => (
-                  <motion.div
-                    key={insight.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="border rounded-lg p-4 space-y-2"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <Target className="w-4 h-4 text-orange-500" />
-                        <span className={`text-sm font-medium ${getConfidenceColor(insight.confidence)}`}>
-                          {Math.round(insight.confidence * 100)}% confidence
-                        </span>
-                      </div>
-                    </div>
-                    <h4 className="font-medium">{insight.title}</h4>
-                    <p className="text-sm text-muted-foreground">{insight.description}</p>
-                  </motion.div>
-                )) || (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Target className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No predictions available yet</p>
+                  <div className="text-center py-4 text-muted-foreground">
+                    <BarChart3 className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                    <p className="text-xs">No patterns detected</p>
                   </div>
                 )}
               </AnimatePresence>
@@ -342,10 +266,9 @@ export function AIInsights({ className }: AIInsightsProps) {
         </div>
 
         {!loading && insights.length === 0 && !error && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p>No insights available yet</p>
-            <p className="text-sm">Keep tracking your habits to generate intelligent insights</p>
+          <div className="text-center py-4 text-muted-foreground">
+            <Brain className="w-6 h-6 mx-auto mb-1 opacity-50" />
+            <p className="text-xs">No insights available</p>
           </div>
         )}
       </CardContent>

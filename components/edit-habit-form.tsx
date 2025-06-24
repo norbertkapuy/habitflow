@@ -19,7 +19,7 @@ interface EditHabitFormProps {
 }
 
 const categories = [
-  'Health', 'Fitness', 'Learning', 'Work', 'Personal', 'Social', 'Creative', 'Other'
+  'Health', 'Fitness', 'Mindfulness', 'Productivity', 'Learning', 'Finance', 'Social', 'Home', 'Creative', 'Other'
 ]
 
 const colors = [

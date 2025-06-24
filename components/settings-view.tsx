@@ -240,11 +240,36 @@ export function SettingsView() {
     }
   }
 
+  const setupRemindersForAllHabits = async () => {
+    try {
+      const habits = JSON.parse(localStorage.getItem('habits') || '[]')
+      const activeHabits = habits.filter((habit: any) => habit.isActive)
+      
+      for (const habit of activeHabits) {
+        if (settings.reminderFrequency !== 'none') {
+          await notificationService.scheduleHabitReminder(
+            habit.id,
+            habit.name,
+            settings.notificationTime || '09:00',
+            settings.reminderFrequency || 'daily'
+          )
+        }
+      }
+      console.log(`Set up reminders for ${activeHabits.length} habits`)
+    } catch (error) {
+      console.error('Error setting up reminders for existing habits:', error)
+    }
+  }
+
   const requestNotificationPermission = async () => {
     try {
       const hasPermission = await notificationService.requestPermission()
       if (hasPermission) {
         saveSettings({ ...settings, notifications: true })
+        
+        // Set up reminders for all existing active habits
+        await setupRemindersForAllHabits()
+        
         // Show test notification
         notificationService.testNotification()
       } else {
@@ -422,9 +447,15 @@ export function SettingsView() {
                     <Input
                       type="time"
                       value={settings.notificationTime}
-                      onChange={(e) => 
-                        saveSettings({ ...settings, notificationTime: e.target.value })
-                      }
+                      onChange={async (e) => {
+                        const newTime = e.target.value
+                        saveSettings({ ...settings, notificationTime: newTime })
+                        
+                        // Update all existing reminders with new time
+                        if (settings.notifications && settings.reminderFrequency !== 'none') {
+                          await setupRemindersForAllHabits()
+                        }
+                      }}
                     />
                   </div>
 
@@ -432,9 +463,14 @@ export function SettingsView() {
                     <Label>Reminder Frequency</Label>
                     <Select 
                       value={settings.reminderFrequency} 
-                      onValueChange={(value: any) => 
+                      onValueChange={async (value: any) => {
                         saveSettings({ ...settings, reminderFrequency: value })
-                      }
+                        
+                        // Update all existing reminders with new frequency
+                        if (settings.notifications) {
+                          await setupRemindersForAllHabits()
+                        }
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -491,6 +527,21 @@ export function SettingsView() {
                     disabled={!settings.notifications}
                   >
                     Get Quote
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label>Setup Habit Reminders</Label>
+                    <p className="text-sm text-muted-foreground">Configure reminders for all existing habits</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={setupRemindersForAllHabits}
+                    disabled={!settings.notifications || settings.reminderFrequency === 'none'}
+                  >
+                    Setup Reminders
                   </Button>
                 </div>
               </>

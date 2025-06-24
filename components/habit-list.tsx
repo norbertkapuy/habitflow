@@ -13,6 +13,7 @@ import { HistoryView } from './history-view'
 import { SettingsView } from './settings-view'
 import { AISuggestions } from './ai-suggestions'
 import { AIInsights } from './ai-insights'
+import { notificationService } from '@/lib/notifications'
 
 type ViewMode = 'habits' | 'analytics' | 'history' | 'settings'
 
@@ -31,6 +32,15 @@ export function HabitList() {
 
   useEffect(() => {
     loadHabits()
+    
+    // Initialize notification service
+    try {
+      // The notification service is already initialized as a singleton when imported
+      // But we can trigger setup for existing habits if needed
+      console.log('Notification service initialized')
+    } catch (error) {
+      console.error('Error initializing notification service:', error)
+    }
   }, [])
 
   if (loading) {
@@ -66,22 +76,6 @@ export function HabitList() {
           <>
             {activeHabits.length > 0 && <HabitStats habits={activeHabits} />}
             
-            {/* Always show AI components - they handle their own enabled/disabled state */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <AISuggestions onAddHabit={(habit) => {
-                const newHabit: Habit = {
-                  id: `habit-${Date.now()}`,
-                  ...habit,
-                  createdAt: new Date(),
-                  isActive: true
-                }
-                const updatedHabits = [...habits, newHabit]
-                saveHabits(updatedHabits)
-                setHabits(updatedHabits)
-              }} />
-              {activeHabits.length > 0 && <AIInsights />}
-            </div>
-            
             <AddHabitForm 
               onHabitAdded={loadHabits} 
               isOpen={showAddForm}
@@ -109,7 +103,7 @@ export function HabitList() {
                 </p>
               </div>
             ) : (
-              <div>
+              <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold">
                     {searchTerm ? `Search Results (${filteredHabits.length})` : 'Your Habits'}
@@ -151,6 +145,22 @@ export function HabitList() {
                 </AnimatePresence>
               </div>
             )}
+            
+            {/* AI components moved to bottom */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AISuggestions onAddHabit={(habit) => {
+                const newHabit: Habit = {
+                  id: `habit-${Date.now()}`,
+                  ...habit,
+                  createdAt: new Date(),
+                  isActive: true
+                }
+                const updatedHabits = [...habits, newHabit]
+                saveHabits(updatedHabits)
+                setHabits(updatedHabits)
+              }} />
+              {activeHabits.length > 0 && <AIInsights />}
+            </div>
           </>
         )
     }

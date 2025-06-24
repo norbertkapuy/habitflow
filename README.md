@@ -13,7 +13,7 @@ HabitFlow is a modern, comprehensive habit tracking application that combines th
 
 ### 🎯 **Core Habit Management**
 - **Complete CRUD Operations**: Create, edit, delete, and track habits effortlessly
-- **Smart Categories**: Organize habits by Health, Fitness, Learning, Work, and more
+- **Smart Categories**: Organize habits by Health, Fitness, Mindfulness, Productivity, Finance, and more
 - **Color-Coded System**: Visual organization with customizable color schemes
 - **Streak Tracking**: Monitor your consistency with intelligent streak calculations
 - **Daily Progress**: Quick check-off system with completion percentages
@@ -267,6 +267,20 @@ We welcome contributions! Here's how you can help:
 - Ensure accessibility compliance
 - Test AI features with multiple models
 - Update documentation for new features
+
+## 🆕 Recent Updates
+
+### **v1.0.3 - UI & Category Improvements**
+- **Enhanced Categories**: Updated to industry-standard categories (Health, Fitness, Mindfulness, Productivity, Finance, Home, Social, Creative)
+- **Improved Visual Hierarchy**: Larger icons, better typography, and enhanced spacing
+- **Better Day Indicators**: Increased size and improved visual feedback for habit completion
+- **Research-Based Design**: Categories aligned with popular habit tracking apps
+
+### **v1.0.2 - Modern Design Overhaul**
+- **Horizontal Habit Cards**: Complete redesign with better information density
+- **AI Component Optimization**: Improved positioning and scrollable content
+- **Enhanced Animations**: Spring-based physics and micro-interactions
+- **Motivational Quotes**: Auto-rotating inspirational quotes strip
 
 ## 📋 Roadmap
 

@@ -26,19 +26,21 @@ HabitFlow is a comprehensive habit tracking application built with Next.js 15, T
 ### Advanced Features
 - ✅ **Edit Habit Modal**: Full editing capabilities with form validation
 - ✅ **View History Integration**: Click habit menu → View history (filters to that habit)
-- ✅ **Notification System**: Browser notifications + custom UI fallback
+- ✅ **Notification System**: Browser notifications + custom UI fallback + daily motivation
 - ✅ **Theme System**: Light/Dark/System with 4 color schemes
 - ✅ **Animation Controls**: Toggle animations on/off globally
 - ✅ **Compact Mode**: Reduce spacing throughout app
+- ✅ **Motivational Quotes Strip**: Top-of-page inspirational quotes with auto-rotation
 
 ### 🤖 AI-Powered Features (NEW)
-- ✅ **Smart Habit Suggestions**: AI-generated personalized habit recommendations
-- ✅ **Intelligent Insights**: Pattern recognition and habit correlation analysis
+- ✅ **Smart Habit Suggestions**: AI-generated personalized habit recommendations (compact scrollable)
+- ✅ **Intelligent Insights**: Pattern recognition and habit correlation analysis (compact scrollable)
 - ✅ **Performance Predictions**: AI forecasting of habit success likelihood
 - ✅ **Motivational AI**: Context-aware motivational messages
 - ✅ **Advanced Analytics**: AI-driven habit pattern detection
 - ✅ **Correlation Discovery**: Automated habit relationship identification
 - ✅ **Trend Analysis**: Multi-timeframe AI insights (week/month/quarter)
+- ✅ **Modern UI Design**: Compact cards with scrollable content, positioned below habits for better hierarchy
 
 ## Architecture
 
@@ -51,17 +53,18 @@ HabitFlow is a comprehensive habit tracking application built with Next.js 15, T
 
 /components
   ui/ (shadcn components)
-  habit-card.tsx (individual habit with weekly view)
-  habit-list.tsx (main container, view switching)
-  habit-header.tsx (navigation, centered buttons)
-  add-habit-form.tsx (create new habits)
+  habit-card.tsx (modern horizontal layout with 2024-2025 design trends)
+  habit-list.tsx (main container, view switching, layout management)
+  habit-header.tsx (navigation, centered buttons, glassmorphism design)
+  add-habit-form.tsx (create new habits, controllable modal)
   edit-habit-form.tsx (edit existing habits)
   habit-stats.tsx (4 stat cards with animations)
   analytics-view.tsx (charts and detailed analytics)
   history-view.tsx (calendar view with filtering)
-  settings-view.tsx (comprehensive settings panel)
-  ai-suggestions.tsx (AI habit recommendations)
-  ai-insights.tsx (AI analytics and correlations)
+  settings-view.tsx (comprehensive settings panel with notification management)
+  ai-suggestions.tsx (AI habit recommendations, compact scrollable design)
+  ai-insights.tsx (AI analytics and correlations, compact scrollable design)
+  motivational-quotes.tsx (top-strip motivational quotes with auto-rotation)
 
 /lib
   types.ts (TypeScript interfaces + AI types)
@@ -69,7 +72,7 @@ HabitFlow is a comprehensive habit tracking application built with Next.js 15, T
   date-utils.ts (date helper functions)
   utils.ts (general utilities)
   notifications.ts (notification service)
-  ai-service.ts (DeepSeek API integration)
+  ai-service.ts (Groq API integration with multiple LLM models)
 ```
 
 ### Data Models
@@ -156,10 +159,12 @@ interface AISettings {
   - High Contrast: WCAG compliant high contrast
 
 ### Navigation System
+- **Glassmorphism Header**: Modern frosted glass design with gradient backgrounds
 - **Centered Layout**: 2-row design with nav buttons centered, search below
 - **View Modes**: habits | analytics | history | settings
 - **State Management**: `currentView` state controls which component renders
 - **Search Integration**: Only shows in habits view, centered with add button
+- **Motivational Strip**: Top-of-page quotes bar with auto-rotation every 15 seconds
 
 ### Settings Implementation
 - **Real-time Application**: All settings apply immediately via DOM class manipulation
@@ -172,7 +177,9 @@ interface AISettings {
 ### Notification System
 - **Service Pattern**: Singleton `NotificationService` class
 - **Dual Fallback**: Browser notifications → Custom UI notifications
-- **Smart Scheduling**: Checks every minute for due reminders
+- **Smart Scheduling**: Checks every minute for due reminders, auto-setup for new habits
+- **Daily Motivation**: AI-powered motivational quote notifications
+- **Reminder Management**: Setup reminders for all habits, time/frequency changes
 - **SSR Safe**: Handles server-side rendering gracefully
 - **Permission Management**: Requests permissions, handles denials gracefully
 
@@ -198,6 +205,21 @@ interface AISettings {
 - **Free Tier**: Groq provides generous free AI inference with ultra-fast speeds
 - **Connection Testing**: Built-in API key validation and connection testing
 - **Lightning Fast**: Groq's LPU technology delivers 300+ tokens/second inference
+- **Compact Design**: AI components positioned below habits, scrollable containers (`max-h-32`)
+- **Subtle Integration**: Muted backgrounds, consistent theming with main app
+
+### 🎨 Modern UI Design System (2024-2025 Trends)
+- **Habit Cards**: Horizontal layout with icon, title, and inline day indicators
+- **Day Indicators**: Modern rounded-xl design with gradients, shadows, and micro-animations
+- **Visual Hierarchy**: Vertical stack (day labels above indicators) for better UX
+- **State Visualization**: 
+  - Completed: Green gradient with glow and rotating check icon
+  - Today: Primary color with border highlight and shadow
+  - Incomplete: Muted with subtle dot indicator
+- **Micro-interactions**: Spring-based animations, hover lift effects, color-adaptive shadows
+- **Contemporary Aesthetics**: Following 2024-2025 trends (modern skeuomorphism, emotional design)
+- **Compact Layout**: ~60% height reduction while maintaining all functionality
+- **Accessibility**: High contrast states, larger hit targets, clear visual hierarchy
 
 ## Common Development Patterns
 
@@ -304,6 +326,78 @@ export function AIComponent() {
     <div>
       {loading ? <LoadingSpinner /> : <ResultsDisplay results={results} />}
     </div>
+  )
+}
+
+// Modern Habit Card Pattern (2024-2025 Design)
+export function ModernHabitCard({ habit, onUpdate }: HabitCardProps) {
+  return (
+    <Card className="overflow-hidden border border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          {/* Icon and Title */}
+          <div className="flex items-center gap-2">
+            <motion.div 
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-sm flex-shrink-0" 
+              style={{ backgroundColor: habit.color + '20', color: habit.color }}
+              whileHover={{ scale: 1.05 }}
+            >
+              {getCategoryIcon(habit.category)}
+            </motion.div>
+            <div className="min-w-0">
+              <CardTitle className="text-base truncate">{habit.name}</CardTitle>
+              <div className="flex items-center gap-1 mt-0.5">
+                <Badge variant="outline" className="text-xs h-4 px-1">
+                  {getStreak()}d
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {completedThisWeek}/{weekDates.length} this week
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Modern Day Indicators */}
+          <div className="flex gap-1.5 flex-1 justify-center">
+            {weekDates.map((date, index) => (
+              <motion.div
+                key={date}
+                whileHover={{ y: -2 }}
+                className="flex flex-col items-center cursor-pointer"
+                onClick={() => handleToggle(date)}
+              >
+                <span className="text-xs font-medium mb-1">{dayName.charAt(0)}</span>
+                <motion.div
+                  className={`relative w-7 h-7 rounded-xl transition-all duration-200 ${
+                    completed
+                      ? 'bg-gradient-to-br from-green-400 to-green-600 shadow-lg shadow-green-500/25'
+                      : isToday
+                      ? 'bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-primary shadow-md shadow-primary/25'
+                      : 'bg-muted/60 border border-border/50 hover:border-primary/30'
+                  }`}
+                >
+                  {completed ? (
+                    <CheckCircle className="w-4 h-4 text-white absolute inset-0 m-auto" />
+                  ) : (
+                    <div className="w-2 h-2 rounded-full bg-muted-foreground/40 absolute inset-0 m-auto" />
+                  )}
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6">
+                <MoreHorizontal className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            {/* Menu items... */}
+          </DropdownMenu>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 ```
@@ -469,3 +563,60 @@ npx tsc --noEmit # TypeScript check
 - **Authentication**: Bearer token format: `Bearer gsk_...`
 - **LPU Technology**: Groq's Language Processing Units provide unmatched speed
 - **Zero Cost**: Completely free for most personal habit tracking use cases
+
+## Recent Updates & Improvements (Latest Sessions)
+
+### 🎯 **Habit Categories Optimization (Current Session)**
+- **Research-Based Categories**: Updated categories based on popular habit tracking apps research
+- **Category Changes**:
+  - Replaced "Work" → "Productivity" (⚡ focus, efficiency, goal achievement)
+  - Replaced "Personal" → "Mindfulness" (🧘 meditation, gratitude, mental wellbeing)
+  - Added "Finance" (💰 budgeting, saving, financial goals)
+  - Added "Home" (🏠 cleaning, organization, maintenance)
+  - Kept: Health (🏥), Fitness (💪), Learning (📚), Social (👥), Creative (🎨), Other (📝)
+- **UI Improvements**: Enhanced habit card sizing and visual hierarchy
+  - Larger icons (w-12 h-12), bigger titles (text-lg font-semibold)
+  - Enhanced day indicators (w-14 h-14) with better visual feedback
+  - Improved badge sizing and typography for better readability
+  - Increased card padding for better spacing and visual balance
+
+### 🎨 **Previous UI/UX Redesign (2024-2025 Modern Trends)**
+- **Motivational Quotes Strip**: Added top-of-page inspirational quotes with auto-rotation (15s intervals)
+- **Habit Card Redesign**: Complete horizontal layout overhaul
+  - Icon + title on left, 7-day indicators in center, menu on right
+  - ~60% height reduction while maintaining all functionality
+  - Modern day indicators with gradients, shadows, and micro-animations
+- **AI Component Optimization**: 
+  - Moved to bottom of page for better hierarchy (habits get primary focus)
+  - Reduced height by 50% with scrollable containers (`max-h-32`)
+  - Fixed background color consistency with main theme
+- **Enhanced Notifications**: 
+  - Auto-setup reminders for new habits
+  - Improved settings panel with manual reminder configuration
+  - Daily motivation quote notifications
+
+### 🔧 **Technical Improvements**
+- **Controllable Components**: Made AddHabitForm externally controllable for better UX
+- **Layout Hierarchy**: Reordered components (Stats → Habits → AI) for optimal focus
+- **Modern Animations**: Spring-based physics, hover lift effects, rotating check icons
+- **Accessibility**: Larger hit targets, better contrast, clearer visual hierarchy
+- **Performance**: Reduced animation complexity, optimized rendering
+- **Category System**: Comprehensive update to align with industry-standard habit categories
+
+### 🎯 **Design System Updates**
+- **Day Indicators**: Vertical stack layout (labels above indicators)
+- **State Visualization**: 
+  - Completed: Green gradient with shadow glow
+  - Today: Primary color with border ring and shadow
+  - Incomplete: Muted with subtle dot, hover effects
+- **Color-Adaptive Interactions**: Dynamic shadows using each habit's custom color
+- **Modern Skeuomorphism**: Subtle depth, gradients, and contemporary aesthetics
+- **Enhanced Typography**: Improved font weights and sizing throughout habit cards
+
+### 📊 **User Experience Enhancements**
+- **Better Information Density**: More habits visible without scrolling
+- **Clearer Visual Hierarchy**: Primary content (habits) gets focus, AI is secondary
+- **Improved Scanning**: Horizontal layout makes it easier to review multiple habits
+- **Enhanced Feedback**: Better completion states and interactive animations
+- **Motivational Elements**: Inspirational quotes and enhanced streak visualization
+- **Industry-Standard Categories**: Aligned with most popular habit tracking patterns

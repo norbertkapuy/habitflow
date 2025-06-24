@@ -114,14 +114,14 @@ export function AISuggestions({ onAddHabit, className }: AISuggestionsProps) {
 
   if (!isEnabled) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-500" />
-            AI Habit Suggestions
+      <Card className={`${className} border-dashed border-2 border-muted-foreground/25`}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            AI Suggestions
           </CardTitle>
-          <CardDescription>
-            Enable AI features in settings to get personalized habit recommendations
+          <CardDescription className="text-xs">
+            Enable AI in settings for recommendations
           </CardDescription>
         </CardHeader>
       </Card>
@@ -130,100 +130,86 @@ export function AISuggestions({ onAddHabit, className }: AISuggestionsProps) {
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-purple-500" />
-              AI Habit Suggestions
-            </CardTitle>
-            <CardDescription>
-              Personalized recommendations based on your current habits
-            </CardDescription>
-          </div>
+          <CardTitle className="flex items-center gap-2 text-sm font-medium">
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            AI Suggestions
+          </CardTitle>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={loadSuggestions}
             disabled={loading}
+            className="h-6 w-6 p-0"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0 max-h-32 overflow-y-auto">
         {error && (
-          <div className="text-sm text-red-600 dark:text-red-400 mb-4 p-3 bg-red-50 dark:bg-red-950 rounded-lg">
+          <div className="text-xs text-red-600 dark:text-red-400 mb-2 p-2 bg-red-50 dark:bg-red-950 rounded-md">
             {error}
           </div>
         )}
 
         {loading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Brain className="w-5 h-5 animate-pulse" />
-              <span>Generating personalized suggestions...</span>
+          <div className="flex items-center justify-center py-4">
+            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+              <Brain className="w-4 h-4 animate-pulse" />
+              <span>Generating suggestions...</span>
             </div>
           </div>
         )}
 
         <AnimatePresence>
           {suggestions.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-2 pr-1">
               {suggestions.map((suggestion, index) => (
                 <motion.div
                   key={suggestion.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="border rounded-lg p-4 space-y-3"
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border rounded-md p-2 bg-background/50"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: suggestion.color }}
-                        />
-                        <h4 className="font-medium">{suggestion.name}</h4>
-                        <Badge 
-                          variant="secondary" 
-                          className={`text-xs ${getConfidenceColor(suggestion.confidence)}`}
-                        >
-                          {getConfidenceIcon(suggestion.confidence)}
-                          {Math.round(suggestion.confidence * 100)}%
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {suggestion.description}
-                      </p>
-                      <p className="text-xs text-muted-foreground italic">
-                        {suggestion.reasoning}
-                      </p>
-                      {suggestion.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {suggestion.tags.map((tag, tagIndex) => (
-                            <Badge key={tagIndex} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div 
+                        className="w-2 h-2 rounded-full flex-shrink-0" 
+                        style={{ backgroundColor: suggestion.color }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 mb-0.5">
+                          <h4 className="font-medium text-sm truncate">{suggestion.name}</h4>
+                          <Badge 
+                            variant="secondary" 
+                            className={`text-xs h-4 px-1 ${getConfidenceColor(suggestion.confidence)}`}
+                          >
+                            {Math.round(suggestion.confidence * 100)}%
+                          </Badge>
                         </div>
-                      )}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {suggestion.description}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 ml-4">
+                    <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                       <Button
                         size="sm"
                         onClick={() => handleAddSuggestion(suggestion)}
-                        className="flex items-center gap-1"
+                        className="h-6 px-2 text-xs"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-3 h-3 mr-1" />
                         Add
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDismissSuggestion(suggestion.id)}
+                        className="h-6 w-6 p-0"
                       >
                         <X className="w-3 h-3" />
                       </Button>
@@ -236,10 +222,9 @@ export function AISuggestions({ onAddHabit, className }: AISuggestionsProps) {
         </AnimatePresence>
 
         {!loading && suggestions.length === 0 && !error && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Brain className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p>No new suggestions at the moment</p>
-            <p className="text-sm">Try refreshing or add more habits to get better recommendations</p>
+          <div className="text-center py-4 text-muted-foreground">
+            <Brain className="w-6 h-6 mx-auto mb-1 opacity-50" />
+            <p className="text-xs">No suggestions available</p>
           </div>
         )}
       </CardContent>

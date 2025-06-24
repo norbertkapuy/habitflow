@@ -28,12 +28,14 @@ const HABIT_COLORS = [
 ]
 
 const HABIT_CATEGORIES = [
-  { value: 'Health', icon: '🏥', description: 'Medical, wellness, mental health' },
+  { value: 'Health', icon: '🏥', description: 'Medical, wellness, nutrition, sleep' },
   { value: 'Fitness', icon: '💪', description: 'Exercise, sports, physical activity' },
+  { value: 'Mindfulness', icon: '🧘', description: 'Meditation, gratitude, mental wellbeing' },
+  { value: 'Productivity', icon: '⚡', description: 'Focus, efficiency, goal achievement' },
   { value: 'Learning', icon: '📚', description: 'Study, reading, skill development' },
-  { value: 'Work', icon: '💼', description: 'Career, productivity, professional' },
-  { value: 'Personal', icon: '👤', description: 'Self-care, hobbies, personal growth' },
+  { value: 'Finance', icon: '💰', description: 'Budgeting, saving, financial goals' },
   { value: 'Social', icon: '👥', description: 'Relationships, networking, community' },
+  { value: 'Home', icon: '🏠', description: 'Cleaning, organization, maintenance' },
   { value: 'Creative', icon: '🎨', description: 'Art, writing, music, creativity' },
   { value: 'Other', icon: '📝', description: 'Everything else' },
 ]

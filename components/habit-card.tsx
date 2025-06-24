@@ -31,10 +31,12 @@ const getCategoryIcon = (category: string) => {
   const icons = {
     Health: '🏥',
     Fitness: '💪',
+    Mindfulness: '🧘',
+    Productivity: '⚡',
     Learning: '📚',
-    Work: '💼',
-    Personal: '👤',
+    Finance: '💰',
     Social: '👥',
+    Home: '🏠',
     Creative: '🎨',
     Other: '📝'
   }
@@ -98,33 +100,33 @@ export function HabitCard({ habit, onUpdate, onViewHistory }: HabitCardProps) {
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
         whileHover={{ y: -2 }}
-        className="mb-4"
+        className="mb-3"
       >
-        <Card className="overflow-hidden border border-border/50 shadow-sm hover:shadow-lg dark:hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+        <Card className="overflow-hidden border border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3">
+              {/* Icon and Title */}
               <div className="flex items-center gap-3">
                 <motion.div 
-                  className="flex items-center justify-center w-10 h-10 rounded-lg text-lg" 
+                  className="flex items-center justify-center w-12 h-12 rounded-xl text-lg flex-shrink-0" 
                   style={{ backgroundColor: habit.color + '20', color: habit.color }}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   {getCategoryIcon(habit.category)}
                 </motion.div>
-                <div className="flex-1">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    {habit.name}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg font-semibold truncate">{habit.name}</CardTitle>
                     <AnimatePresence>
                       {getStreak() > 0 && (
                         <Tooltip>
                           <TooltipTrigger>
                             <motion.div
-                              initial={{ scale: 0, rotate: -180 }}
-                              animate={{ scale: 1, rotate: 0 }}
-                              exit={{ scale: 0, rotate: 180 }}
-                              whileHover={{ scale: 1.2 }}
-                              transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              exit={{ scale: 0 }}
+                              whileHover={{ scale: 1.1 }}
                             >
                               <Flame className="w-4 h-4 text-orange-500" />
                             </motion.div>
@@ -135,64 +137,89 @@ export function HabitCard({ habit, onUpdate, onViewHistory }: HabitCardProps) {
                         </Tooltip>
                       )}
                     </AnimatePresence>
-                  </CardTitle>
-                  {habit.description && (
-                    <motion.p 
-                      className="text-sm text-muted-foreground mt-1"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      {habit.description}
-                    </motion.p>
-                  )}
-                  <motion.div 
-                    className="flex items-center gap-2 mt-2"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ delay: 0.3, duration: 0.6 }}
-                  >
-                    <Progress value={getWeekProgress()} className="h-2 flex-1" />
-                    <motion.span 
-                      className="text-xs text-muted-foreground"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                    >
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="outline" className="text-sm h-5 px-2 font-medium">
+                      {getStreak()}d streak
+                    </Badge>
+                    <span className="text-sm text-muted-foreground font-medium">
                       {completedThisWeek}/{weekDates.length} this week
-                    </motion.span>
-                  </motion.div>
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Badge variant="secondary" className="gap-1">
-                    <Target className="w-3 h-3" />
-                    {habit.category}
-                  </Badge>
-                </motion.div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Badge variant="outline" className="gap-1">
-                    <Flame className="w-3 h-3" />
-                    {getStreak()} day{getStreak() !== 1 ? 's' : ''}
-                  </Badge>
-                </motion.div>
+
+              {/* Days in a row */}
+              <div className="flex gap-2 flex-1 justify-center">
+                {weekDates.map((date, index) => {
+                  const completed = isCompleted(date)
+                  const isToday = date === today
+                  const dayName = getDayName(date)
+                  
+                  return (
+                    <Tooltip key={date}>
+                      <TooltipTrigger asChild>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.03 * index }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`flex flex-col items-center justify-center cursor-pointer w-14 h-14 rounded-lg border transition-colors ${
+                            isToday 
+                              ? 'border-primary bg-primary/10' 
+                              : completed 
+                              ? 'border-green-500 bg-green-500' 
+                              : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                          }`}
+                          onClick={() => handleToggle(date)}
+                        >
+                          <span className={`text-sm font-semibold ${
+                            isToday ? 'text-primary' : completed ? 'text-white' : 'text-muted-foreground'
+                          }`}>
+                            {dayName.charAt(0)}
+                          </span>
+                          
+                          <AnimatePresence mode="wait">
+                            {completed ? (
+                              <motion.div
+                                key="completed"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                              >
+                                <CheckCircle className="w-4 h-4 text-white" />
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                key="incomplete"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                className={`w-2 h-2 rounded-full ${
+                                  isToday ? 'bg-primary' : 'bg-muted-foreground/40'
+                                }`}
+                              />
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{completed ? 'Completed' : 'Mark as completed'} - {dayName}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
+              </div>
+
+              {/* Menu */}
+              <div className="flex-shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </motion.div>
+                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                      <MoreHorizontal className="w-3 h-3" />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" side="bottom" sideOffset={8} alignOffset={-4}>
                     <DropdownMenuItem onClick={() => setShowEditForm(true)}>
@@ -215,76 +242,6 @@ export function HabitCard({ habit, onUpdate, onViewHistory }: HabitCardProps) {
                 </DropdownMenu>
               </div>
             </div>
-          </CardHeader>
-          
-          <CardContent>
-            <motion.div 
-              className="flex gap-2 justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, staggerChildren: 0.1 }}
-            >
-              {weekDates.map((date, index) => {
-                const completed = isCompleted(date)
-                const isToday = date === today
-                const dayName = getDayName(date)
-                
-                return (
-                  <Tooltip key={date}>
-                    <TooltipTrigger asChild>
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * index }}
-                        whileHover={{ 
-                          scale: 1.1, 
-                          y: -2,
-                          transition: { type: "spring", stiffness: 400, damping: 10 }
-                        }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer w-16 h-20 ${
-                          isToday 
-                            ? 'border-primary bg-primary/5 ring-1 ring-primary/20' 
-                            : completed 
-                            ? 'border-green-200 bg-green-50' 
-                            : 'border-border hover:border-primary/30'
-                        }`}
-                        onClick={() => handleToggle(date)}
-                      >
-                        <span className={`text-xs font-medium mb-2 ${isToday ? 'text-primary' : ''}`}>
-                          {dayName}
-                        </span>
-                        <AnimatePresence mode="wait">
-                          {completed ? (
-                            <motion.div
-                              key="completed"
-                              initial={{ scale: 0, rotate: -90 }}
-                              animate={{ scale: 1, rotate: 0 }}
-                              exit={{ scale: 0, rotate: 90 }}
-                              transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                            >
-                              <CheckCircle className="w-6 h-6 text-green-600" />
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              key="incomplete"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              exit={{ scale: 0 }}
-                              className="w-6 h-6 rounded-full border-2 border-muted-foreground/30 hover:border-primary/50"
-                              whileHover={{ borderColor: habit.color }}
-                            />
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{completed ? 'Completed' : 'Mark as completed'} - {date}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )
-              })}
-            </motion.div>
           </CardContent>
         </Card>
       </motion.div>
