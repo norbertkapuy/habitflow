@@ -1,19 +1,28 @@
 # HabitFlow - Project Overview
 
 ## Project Description
-HabitFlow is a comprehensive habit tracking application built with Next.js 15, TypeScript, and shadcn/ui components. Features modern dark/light themes, animations, analytics, complete notification system, and cutting-edge AI-powered insights using Groq API integration.
+HabitFlow is a comprehensive habit tracking application built with Next.js 15, TypeScript, and shadcn/ui components. Features modern dark/light themes, animations, analytics, complete notification system, cutting-edge AI-powered insights using Groq API integration, and a production-ready Docker backend with PostgreSQL database persistence.
 
 ## Tech Stack
-- **Framework**: Next.js 15 with App Router
+### Frontend
+- **Framework**: Next.js 15 with App Router (static export for production)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4 with @tailwindcss/postcss
 - **UI Components**: shadcn/ui (manually configured)
 - **Animations**: Framer Motion
 - **Charts**: Recharts for analytics visualization
-- **Data Storage**: Local storage (browser-based)
 - **Date Handling**: date-fns library
 - **AI Integration**: Groq API (OpenAI-compatible format)
-- **AI Models**: Llama 3.3 70B, Llama 3 8B, Mixtral 8x7B, Gemma2 9B
+- **AI Models**: 9 Groq models with automatic switching (Llama 3.3 70B, Llama 3.1 8B, Gemma2 9B, etc.)
+
+### Backend & Infrastructure
+- **API Server**: Node.js with Express
+- **Database**: PostgreSQL 15 with optimized schema
+- **Web Server**: Nginx with reverse proxy and SSL support
+- **Cache**: Redis for performance optimization
+- **Containerization**: Docker Compose multi-service setup
+- **Data Storage**: PostgreSQL database with localStorage migration capability
+- **Security**: Input validation, rate limiting, CORS protection, security headers
 
 ## Key Features Implemented
 ### Core Functionality
@@ -41,6 +50,8 @@ HabitFlow is a comprehensive habit tracking application built with Next.js 15, T
 - ✅ **Correlation Discovery**: Automated habit relationship identification
 - ✅ **Trend Analysis**: Multi-timeframe AI insights (week/month/quarter)
 - ✅ **Modern UI Design**: Compact cards with scrollable content, positioned below habits for better hierarchy
+- ✅ **Automatic Model Switching**: Intelligent fallback across all 9 Groq models when rate limits are hit
+- ✅ **Zero-Downtime AI**: Production models (Llama 3.3 70B, 3.1 8B, Gemma2 9B) with preview model fallbacks
 
 ## Architecture
 
@@ -138,12 +149,22 @@ interface AIInsight {
 interface AISettings {
   enabled: boolean
   apiKey: string
-  model: 'llama-3.3-70b-versatile' | 'llama3-8b-8192' | 'mixtral-8x7b-32768' | 'gemma2-9b-it'
   autoSuggestions: boolean
   weeklyInsights: boolean
   correlationAnalysis: boolean
   predictionEnabled: boolean
   maxSuggestions: number
+}
+
+interface GroqModel {
+  id: string
+  name: string
+  provider: string
+  contextWindow: number
+  maxTokens: number
+  type: 'production' | 'preview'
+  speed: number // tokens per second
+  priority: number // lower number = higher priority for fallback
 }
 ```
 
@@ -199,12 +220,17 @@ interface AISettings {
 ### 🤖 AI Integration System (NEW)
 - **Service Pattern**: Singleton `AIService` class for consistent state management
 - **OpenAI Compatibility**: Uses OpenAI SDK format with Groq endpoint
-- **Model Selection**: Supports Llama 3.3 70B, Llama 3 8B, Mixtral 8x7B, and Gemma2 9B
-- **Error Handling**: Graceful fallbacks when API unavailable or rate limited
+- **Automatic Model Management**: Intelligent switching across 9 Groq models with priority-based fallback
+- **Production Model Priority**: Llama 3.3 70B → Llama 3.1 8B → Gemma2 9B (stable, reliable)
+- **Preview Model Fallback**: DeepSeek R1, Llama 4 Scout/Maverick, Mistral Saba, Qwen models
+- **Smart Rate Limit Handling**: Automatically switches to next model on 429 errors
+- **Failure Tracking**: Records model failures and skips problematic models temporarily
+- **Error Handling**: Graceful fallbacks when API unavailable or all models rate limited
 - **Privacy First**: API keys stored locally, no data sent unless AI explicitly enabled
 - **Free Tier**: Groq provides generous free AI inference with ultra-fast speeds
 - **Connection Testing**: Built-in API key validation and connection testing
 - **Lightning Fast**: Groq's LPU technology delivers 300+ tokens/second inference
+- **Zero-Downtime Design**: Never fails due to single model limitations
 - **Compact Design**: AI components positioned below habits, scrollable containers (`max-h-32`)
 - **Subtle Integration**: Muted backgrounds, consistent theming with main app
 
@@ -269,6 +295,11 @@ const aiSettings = AIService.getSettings()
 AIService.updateSettings({ enabled: true, apiKey: 'gsk_your_groq_key' })
 const suggestions = await AIService.generateHabitSuggestions(habits, entries)
 const insights = await AIService.generateInsights({ habits, entries, timeframe: 'month', analysisType: 'insights' })
+
+// Model management (automatic)
+const currentModel = AIService.getCurrentModel()  // Get currently active model
+const modelStats = AIService.getModelStats()     // Get failure counts for debugging
+const availableModels = AIService.getAvailableModels() // Get all 9 models with priorities
 ```
 
 ### Animation Patterns
@@ -530,6 +561,78 @@ npx tsc --noEmit # TypeScript check
 - [ ] **Social Habit Matching**: AI-powered habit buddy recommendations
 - [ ] **Wearable Integration**: AI correlation with health data from smartwatches
 
+## 🚀 **Quick Start for New AI Sessions**
+
+### For Docker Backend Development
+```bash
+# 1. Start the complete Docker stack
+./docker-manage.sh start
+
+# 2. Check health of all services
+./docker-manage.sh health
+
+# 3. View logs if needed
+./docker-manage.sh logs
+
+# 4. Access the application
+# Frontend: http://localhost
+# API: http://localhost:3001/api
+# Health: http://localhost:3001/api/health
+
+# 5. For development changes
+./docker-manage.sh rebuild  # Rebuild after code changes
+```
+
+### For Frontend-Only Development
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start development server
+npm run dev
+# App runs on http://localhost:3000 or 3001
+
+# 3. For production build
+npm run build
+npm run export  # For static export
+```
+
+### Database Management
+```bash
+# Connect to database
+./docker-manage.sh db-shell
+
+# Backup database
+./docker-manage.sh backup
+
+# View container status
+./docker-manage.sh status
+
+# Clean up everything
+./docker-manage.sh clean
+```
+
+### Testing API Endpoints
+```bash
+# Test health
+curl http://localhost:3001/api/health
+
+# Get habits
+curl http://localhost:3001/api/habits
+
+# Create habit
+curl -X POST http://localhost:3001/api/habits \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","category":"Health","color":"#FF6B6B"}'
+```
+
+### Key Files for Development
+- **Frontend**: `app/page.tsx`, `components/habit-list.tsx`
+- **Backend API**: `backend/src/routes/habits.js`, `backend/src/routes/entries.js`
+- **Database**: `backend/sql/init.sql`, `backend/src/config/database.js`
+- **Docker**: `docker-compose.yml`, `docker-manage.sh`
+- **Migration**: `lib/migration-service.ts`
+
 ## Important Notes for Future Development
 
 ### Core Architecture
@@ -563,6 +666,237 @@ npx tsc --noEmit # TypeScript check
 - **Authentication**: Bearer token format: `Bearer gsk_...`
 - **LPU Technology**: Groq's Language Processing Units provide unmatched speed
 - **Zero Cost**: Completely free for most personal habit tracking use cases
+
+## 🐳 **Docker Backend Implementation (Latest Session - December 2024)**
+
+### 🏗️ **Complete Backend Architecture**
+- ✅ **Docker Infrastructure**: Multi-container setup with Docker Compose
+- ✅ **PostgreSQL Database**: Production-ready database with proper schema, indexes, and constraints
+- ✅ **Express API Server**: Full RESTful API with comprehensive CRUD operations
+- ✅ **Nginx Web Server**: High-performance reverse proxy with static file serving
+- ✅ **Redis Cache**: Optional caching layer for performance optimization
+- ✅ **Health Monitoring**: Comprehensive health checks and status endpoints
+
+### 📋 **Database Schema**
+```sql
+-- Core Tables
+habits (id UUID, name, description, category, color, created_at, updated_at, is_active)
+habit_entries (id UUID, habit_id UUID, date DATE, completed BOOLEAN, completed_at TIMESTAMP)
+user_settings (id UUID, user_id, settings JSONB)
+
+-- Indexes & Performance
+- Proper foreign key constraints with CASCADE delete
+- Optimized indexes for queries (habit_id, date, category, etc.)
+- Triggers for automatic timestamp updates
+- Functions for streak calculations and analytics
+
+-- Sample Data
+- 5 pre-configured sample habits across different categories
+- Default user settings with AI configuration
+- Database views for analytics and reporting
+```
+
+### 🚀 **API Endpoints**
+```bash
+# Habits API
+GET    /api/habits              # Get all habits (with optional filters)
+GET    /api/habits/:id          # Get specific habit
+POST   /api/habits              # Create new habit
+PUT    /api/habits/:id          # Update habit
+DELETE /api/habits/:id          # Soft delete habit
+GET    /api/habits/categories   # Get habit categories
+POST   /api/habits/bulk         # Bulk create habits
+
+# Entries API
+GET    /api/entries                      # Get entries (requires filters)
+GET    /api/entries/habits/:habitId      # Get entries for specific habit
+GET    /api/entries/habits/:habitId/stats # Get completion statistics
+GET    /api/entries/habits/:habitId/:date # Get specific entry
+POST   /api/entries                      # Create/update entry
+PUT    /api/entries/habits/:habitId/:date # Update specific entry
+DELETE /api/entries/habits/:habitId/:date # Delete entry
+POST   /api/entries/bulk                 # Bulk create entries
+GET    /api/entries/export               # Export data
+
+# Health & Monitoring
+GET    /api/health              # System health check
+GET    /api/health/detailed     # Detailed system information
+```
+
+### 🔧 **Docker Services Configuration**
+```yaml
+services:
+  postgres:     # PostgreSQL 15 database with initialization scripts
+  backend:      # Node.js API server with health checks
+  nginx:        # High-performance web server with SSL support
+  redis:        # Optional caching layer
+  frontend-build: # Next.js static build container
+```
+
+### 📁 **Backend File Structure**
+```
+backend/
+├── src/
+│   ├── config/
+│   │   └── database.js         # PostgreSQL connection & initialization
+│   ├── models/
+│   │   ├── Habit.js           # Habit model with full CRUD operations
+│   │   └── HabitEntry.js      # Entry model with analytics functions
+│   ├── routes/
+│   │   ├── habits.js          # Habits API routes with validation
+│   │   ├── entries.js         # Entries API routes with validation
+│   │   └── health.js          # Health monitoring endpoints
+│   └── index.js               # Main Express server
+├── sql/
+│   └── init.sql               # Database initialization script
+├── Dockerfile                 # Backend container configuration
+└── package.json               # Dependencies and scripts
+```
+
+### 🔄 **Data Migration System**
+```typescript
+// Migration Service (lib/migration-service.ts)
+class MigrationService {
+  static needsMigration(): boolean         # Check if localStorage data exists
+  static testConnection(): Promise<boolean> # Test database connectivity
+  static migrate(): Promise<MigrationResult> # Full migration process
+  static clearLocalStorage(): void        # Clean up after migration
+  static restoreFromBackup(): boolean     # Rollback if needed
+  static getMigrationStatus(): MigrationStatus # Check migration state
+}
+
+// Migration Process
+1. Check for localStorage data (habits, habitEntries)
+2. Test database connection
+3. Migrate habits first (get new UUIDs)
+4. Map old IDs to new IUIDs for entries
+5. Bulk migrate entries with proper relationships
+6. Backup original data before clearing localStorage
+7. Mark migration complete with timestamp
+```
+
+### ⚙️ **Nginx Configuration**
+```nginx
+# Features
+- Static file serving for Next.js frontend
+- API reverse proxy to backend
+- Gzip compression and caching
+- Security headers (XSS, CSRF protection)
+- Rate limiting (API: 10r/s, General: 1r/s)
+- SSL/HTTPS support (configurable)
+- Health check endpoints
+- CORS handling for API requests
+
+# Performance Optimizations
+- Static asset caching (1 year for immutable assets)
+- API response caching (1 minute for health checks)
+- Gzip compression for text assets
+- Connection keep-alive and HTTP/2 support
+```
+
+### 🛠️ **Management Tools**
+```bash
+# Docker Management Script (docker-manage.sh)
+./docker-manage.sh start       # Start all services
+./docker-manage.sh stop        # Stop all services
+./docker-manage.sh restart     # Restart services
+./docker-manage.sh build       # Build containers
+./docker-manage.sh rebuild     # Rebuild from scratch
+./docker-manage.sh logs        # View logs
+./docker-manage.sh logs-f      # Follow logs
+./docker-manage.sh status      # Container status
+./docker-manage.sh health      # Health check all services
+./docker-manage.sh backup      # Database backup
+./docker-manage.sh restore     # Database restore
+./docker-manage.sh clean       # Clean up containers
+./docker-manage.sh db-shell    # Connect to database
+./docker-manage.sh backend-shell # Connect to backend
+```
+
+### 🔒 **Security Features**
+- **Input Validation**: Comprehensive validation using express-validator
+- **SQL Injection Protection**: Parameterized queries with pg library
+- **Rate Limiting**: API and general request limits via nginx
+- **CORS Protection**: Properly configured for frontend domain
+- **Security Headers**: XSS protection, content type sniffing prevention
+- **Container Security**: Non-root users in all containers
+- **Connection Limits**: Per-IP connection limiting
+- **Error Handling**: Secure error responses without data leakage
+
+### 📊 **Monitoring & Health Checks**
+```json
+// Health Check Response
+{
+  "status": "healthy",
+  "timestamp": "2025-06-24T22:06:54.627Z", 
+  "uptime": "5s",
+  "database": "connected",
+  "memory": {"used": "13MB", "total": "31MB"},
+  "version": "1.0.0"
+}
+
+// Container Health Checks
+- Database: pg_isready check every 10s
+- Backend: HTTP health endpoint every 30s  
+- Nginx: HTTP status check every 30s
+- Redis: Redis ping check every 10s
+```
+
+### 🔧 **Environment Configuration**
+```bash
+# Database
+DB_HOST=postgres
+DB_USER=habitflow_user
+DB_PASSWORD=habitflow_password
+DB_NAME=habitflow
+
+# Backend
+NODE_ENV=production
+PORT=3001
+FRONTEND_URL=http://localhost
+
+# Frontend  
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
+
+### 🎯 **Production Ready Features**
+- **SSL/HTTPS Support**: Ready for production certificates
+- **Database Backups**: Automated backup system with restore capability
+- **Scaling Ready**: Can handle multiple backend instances with load balancing
+- **Performance Monitoring**: Built-in metrics and health endpoints
+- **Error Logging**: Comprehensive logging throughout the stack
+- **Graceful Shutdown**: Proper cleanup on container stop
+- **Resource Optimization**: Efficient memory and CPU usage
+
+### 🔄 **Migration Path for Users**
+1. **Seamless Transition**: Frontend detects localStorage data on first load
+2. **Migration Prompt**: User gets option to migrate to database backend
+3. **Automatic Process**: Migration happens automatically with progress feedback
+4. **Data Backup**: Original localStorage data is backed up before migration
+5. **Rollback Option**: Users can restore localStorage data if needed
+6. **Zero Data Loss**: Complete preservation of habits, entries, and settings
+
+### 📝 **Next.js Configuration Updates**
+```javascript
+// next.config.js - Updated for static export
+const nextConfig = {
+  output: 'export',           # Static export for Nginx serving
+  trailingSlash: true,        # Nginx-friendly URLs
+  images: { unoptimized: true }, # No image optimization for static
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+  }
+}
+```
+
+### 🧪 **Testing & Verification**
+- ✅ **Database Initialization**: All tables, indexes, triggers created successfully
+- ✅ **API Endpoints**: Full CRUD operations tested and working
+- ✅ **Health Monitoring**: All health checks passing
+- ✅ **Migration Service**: LocalStorage to database migration tested
+- ✅ **Docker Orchestration**: All containers start, stop, and restart properly
+- ✅ **Sample Data**: Pre-configured habits and settings available
+- ✅ **Error Handling**: Graceful degradation and proper error responses
 
 ## Recent Updates & Improvements (Latest Sessions)
 
@@ -602,6 +936,14 @@ npx tsc --noEmit # TypeScript check
 - **Accessibility**: Larger hit targets, better contrast, clearer visual hierarchy
 - **Performance**: Reduced animation complexity, optimized rendering
 - **Category System**: Comprehensive update to align with industry-standard habit categories
+
+### 🔧 **Docker Frontend Build Optimization (Latest Session)**
+- **Fixed Next.js Export**: Removed deprecated `npm run export` command - Next.js 15 with `output: 'export'` handles static generation automatically
+- **Corrected Volume Mapping**: Fixed Docker volume conflicts that caused "EBUSY" errors during build
+- **Optimized Build Process**: Streamlined frontend-build container to use proper shared volume mounting
+- **Nginx Integration**: Updated nginx configuration to serve static files from correct volume path
+- **Build Verification**: Confirmed successful static export with all assets (index.html, _next/, 404.html) properly generated
+- **Production Ready**: Frontend now fully operational via nginx at `http://localhost` with backend API proxy working
 
 ### 🎯 **Design System Updates**
 - **Day Indicators**: Vertical stack layout (labels above indicators)

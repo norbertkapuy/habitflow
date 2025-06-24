@@ -44,10 +44,20 @@ export interface AIInsight {
   createdAt: Date
 }
 
+export interface GroqModel {
+  id: string
+  name: string
+  provider: string
+  contextWindow: number
+  maxTokens: number
+  type: 'production' | 'preview'
+  speed: number // tokens per second
+  priority: number // lower number = higher priority for fallback
+}
+
 export interface AISettings {
   enabled: boolean
   apiKey: string
-  model: 'llama-3.3-70b-versatile' | 'llama3-8b-8192' | 'mixtral-8x7b-32768' | 'gemma2-9b-it'
   autoSuggestions: boolean
   weeklyInsights: boolean
   correlationAnalysis: boolean

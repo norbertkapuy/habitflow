@@ -774,23 +774,26 @@ export function SettingsView() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>AI Model</Label>
-                  <Select 
-                    value={aiSettings.model} 
-                    onValueChange={(value: any) => 
-                      saveAISettings({ model: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="llama-3.3-70b-versatile">Llama 3.3 70B (Recommended)</SelectItem>
-                      <SelectItem value="llama3-8b-8192">Llama 3 8B (Fast)</SelectItem>
-                      <SelectItem value="mixtral-8x7b-32768">Mixtral 8x7B (Efficient)</SelectItem>
-                      <SelectItem value="gemma2-9b-it">Gemma2 9B (Lightweight)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>AI Model Management</Label>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm font-medium">Automatic Model Selection Enabled</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      The system automatically uses the best available model and switches to fallback models if rate limits are reached.
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      <strong>Priority Order:</strong> Llama 3.3 70B → Llama 3.1 8B → Gemma2 9B → DeepSeek R1 → Llama 4 Scout → Llama 4 Maverick → Mistral Saba → Qwen QwQ → Qwen3
+                    </p>
+                    {aiSettings.enabled && AIService.getCurrentModel() && (
+                      <div className="mt-2 pt-2 border-t border-border/50">
+                        <p className="text-xs text-muted-foreground">
+                          <strong>Currently Active:</strong> {AIService.getCurrentModel()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

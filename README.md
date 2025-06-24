@@ -59,6 +59,13 @@ HabitFlow is a modern, comprehensive habit tracking application that combines th
 - **TypeScript** - Full type safety and developer experience
 - **React 18** - Modern React with hooks and concurrent features
 
+### **Backend & Infrastructure**
+- **Node.js + Express** - RESTful API server with comprehensive endpoints
+- **PostgreSQL 15** - Robust relational database with optimized schema
+- **Nginx** - High-performance web server with SSL support and API proxy
+- **Redis** - Optional caching layer for enhanced performance
+- **Docker Compose** - Multi-service containerized deployment
+
 ### **Styling & UI**
 - **Tailwind CSS v4** - CSS-first utility framework
 - **shadcn/ui** - High-quality, accessible component library
@@ -73,21 +80,48 @@ HabitFlow is a modern, comprehensive habit tracking application that combines th
 ### **Data & Analytics**
 - **Recharts** - Composable charting library built on D3
 - **date-fns** - Modern JavaScript date utility library
-- **Local Storage** - Browser-based data persistence
+- **Database Persistence** - PostgreSQL with localStorage migration support
 
 ### **Development Tools**
 - **ESLint** - Code linting and quality assurance
 - **PostCSS** - CSS processing and optimization
-- **GitHub Actions Ready** - CI/CD pipeline compatible
+- **Docker** - Containerized development and deployment
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Modern web browser
+### 🐳 **Docker Deployment (Recommended for Production)**
 
-### Installation
+**Prerequisites**: Docker and Docker Compose
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/norbertkapuy/habitflow.git
+   cd habitflow
+   ```
+
+2. **Start with Docker**
+   ```bash
+   # Start all services (database, backend, nginx, frontend)
+   ./docker-manage.sh start
+   
+   # Or manually with docker-compose
+   docker-compose up -d
+   ```
+
+3. **Access the application**
+   - **Web App**: [http://localhost](http://localhost)
+   - **API**: [http://localhost:3001/api](http://localhost:3001/api)
+
+4. **Manage services**
+   ```bash
+   ./docker-manage.sh status   # Check health
+   ./docker-manage.sh logs     # View logs
+   ./docker-manage.sh stop     # Stop services
+   ```
+
+### 💻 **Development Setup**
+
+**Prerequisites**: Node.js 18+, npm/yarn
 
 1. **Clone the repository**
    ```bash
@@ -171,6 +205,13 @@ HabitFlow is a modern, comprehensive habit tracking application that combines th
 3. Import data from previous backups
 4. Use auto-backup feature for peace of mind
 
+### **Migrating to Database Backend**
+1. Start the Docker services (`./docker-manage.sh start`)
+2. Open the app at [http://localhost](http://localhost)
+3. If you have existing localStorage data, you'll see a migration prompt
+4. Click "Migrate to Database" for persistent storage
+5. Your data will be safely transferred with automatic backup
+
 ## 🌟 AI Features Deep Dive
 
 ### **Intelligent Habit Suggestions**
@@ -219,7 +260,37 @@ Choose the perfect AI model for your needs:
 
 ## 🚢 Deployment
 
-### **Vercel (Recommended)**
+### **🐳 Docker (Production Ready)**
+
+**Complete multi-service deployment with database, API, and web server:**
+
+```bash
+# Quick deployment
+./docker-manage.sh start
+
+# Access your app at http://localhost
+# API available at http://localhost:3001/api
+```
+
+**What's included:**
+- **PostgreSQL 15** - Database with optimized schema and sample data
+- **Express API** - Full RESTful backend with health monitoring
+- **Nginx** - Production web server with SSL support and API proxy
+- **Redis** - Caching layer for performance optimization
+- **Auto Migration** - Seamless transition from localStorage to database
+
+**Management commands:**
+```bash
+./docker-manage.sh build      # Build all containers
+./docker-manage.sh health     # Check service health
+./docker-manage.sh backup     # Database backup
+./docker-manage.sh logs       # View service logs
+./docker-manage.sh clean      # Clean up containers
+```
+
+### **☁️ Cloud Deployment**
+
+### **Vercel (Frontend Only)**
 ```bash
 # Deploy to Vercel
 npx vercel --prod
@@ -227,7 +298,7 @@ npx vercel --prod
 # Or connect your GitHub repository to Vercel for automatic deployments
 ```
 
-### **Netlify**
+### **Netlify (Frontend Only)**
 ```bash
 # Build the project
 npm run build
@@ -237,16 +308,19 @@ npm run export
 # Upload the 'out' directory to Netlify
 ```
 
-### **Docker**
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
+### **VPS/Server Deployment**
+```bash
+# For production server deployment
+git clone https://github.com/norbertkapuy/habitflow.git
+cd habitflow
+
+# Configure environment
+cp env.example .env
+# Edit .env with your production settings
+
+# Deploy with SSL
+./docker-manage.sh start
+# Configure SSL certificates in nginx/ssl/
 ```
 
 ## 🤝 Contributing
@@ -269,6 +343,14 @@ We welcome contributions! Here's how you can help:
 - Update documentation for new features
 
 ## 🆕 Recent Updates
+
+### **v1.1.0 - Production Docker Backend** 🐳
+- **Complete Docker Infrastructure**: Multi-service deployment with PostgreSQL, Express API, Nginx, Redis
+- **Database Persistence**: Full migration from localStorage to PostgreSQL with automatic data transfer
+- **Production Web Server**: Nginx with SSL support, API proxy, and static file serving
+- **RESTful API**: Comprehensive backend with full CRUD operations, validation, and health monitoring
+- **Zero-Downtime Migration**: Seamless transition for existing users with data backup and restore
+- **Management Tools**: Complete Docker management script with backup, monitoring, and maintenance commands
 
 ### **v1.0.3 - UI & Category Improvements**
 - **Enhanced Categories**: Updated to industry-standard categories (Health, Fitness, Mindfulness, Productivity, Finance, Home, Social, Creative)
