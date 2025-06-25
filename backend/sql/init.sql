@@ -171,40 +171,24 @@ ORDER BY h.created_at DESC;
 
 -- Create a function to calculate current streak
 CREATE OR REPLACE FUNCTION get_current_streak(habit_uuid UUID)
-RETURNS INTEGER AS $$
+RETURNS INTEGER AS $
 DECLARE
-    streak_count INTEGER := 0;
-    check_date DATE := CURRENT_DATE;
-    is_completed BOOLEAN;
+    streak_count INTEGER;
 BEGIN
-    -- Check if there's an entry for today, if not start from yesterday
-    SELECT completed INTO is_completed 
-    FROM habit_entries 
-    WHERE habit_id = habit_uuid AND date = CURRENT_DATE;
-    
-    -- If no entry for today or not completed, start from yesterday
-    IF is_completed IS NULL OR is_completed = false THEN
-        check_date := CURRENT_DATE - INTERVAL '1 day';
-    END IF;
-    
-    -- Count consecutive completed days
-    WHILE check_date >= (SELECT MIN(date) FROM habit_entries WHERE habit_id = habit_uuid) LOOP
-        SELECT completed INTO is_completed 
-        FROM habit_entries 
-        WHERE habit_id = habit_uuid AND date = check_date;
-        
-        -- If no entry or not completed, break the streak
-        IF is_completed IS NULL OR is_completed = false THEN
-            EXIT;
-        END IF;
-        
-        streak_count := streak_count + 1;
-        check_date := check_date - INTERVAL '1 day';
-    END LOOP;
-    
+    WITH RECURSIVE dates AS (
+        SELECT 
+            CASE 
+                WHEN (SELECT completed FROM habit_entries WHERE habit_id = habit_uuid AND date = CURRENT_DATE) THEN CURRENT_DATE
+                ELSE CURRENT_DATE - INTERVAL '1 day'
+            END as d
+        UNION ALL
+        SELECT d - INTERVAL '1 day' FROM dates
+        WHERE (SELECT completed FROM habit_entries WHERE habit_id = habit_uuid AND date = d - INTERVAL '1 day')
+    )
+    SELECT count(*) INTO streak_count FROM dates;
     RETURN streak_count;
 END;
-$$ language 'plpgsql';
+$ language 'plpgsql';
 
 -- Grant permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO habitflow_user;

@@ -24,9 +24,13 @@ USER backend
 # Expose port
 EXPOSE 3001
 
+USER root
+COPY --chown=backend:nodejs healthcheck.js ./
+USER backend
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+  CMD ["node", "healthcheck.js"]
 
 # Start the application
 CMD ["npm", "start"]

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Habit } from '@/lib/types'
 import { getHabits, saveHabits } from '@/lib/storage'
+import { Button } from '@/components/ui/button'
 import { HabitCard } from './habit-card'
 import { AddHabitForm } from './add-habit-form'
 import { HabitStats } from './habit-stats'
@@ -12,7 +13,6 @@ import { AnalyticsView } from './analytics-view'
 import { HistoryView } from './history-view'
 import { SettingsView } from './settings-view'
 import { AISuggestions } from './ai-suggestions'
-import { AIInsights } from './ai-insights'
 import { notificationService } from '@/lib/notifications'
 
 type ViewMode = 'habits' | 'analytics' | 'history' | 'settings'
@@ -109,12 +109,14 @@ export function HabitList() {
                     {searchTerm ? `Search Results (${filteredHabits.length})` : 'Your Habits'}
                   </h2>
                   {searchTerm && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setSearchTerm('')}
-                      className="text-sm text-muted-foreground hover:text-foreground"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       Clear search
-                    </button>
+                    </Button>
                   )}
                 </div>
                 <AnimatePresence>
@@ -146,8 +148,8 @@ export function HabitList() {
               </div>
             )}
             
-            {/* AI components moved to bottom */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* AI suggestions at bottom */}
+            <div className="w-full">
               <AISuggestions onAddHabit={(habit) => {
                 const newHabit: Habit = {
                   id: `habit-${Date.now()}`,
@@ -159,7 +161,6 @@ export function HabitList() {
                 saveHabits(updatedHabits)
                 setHabits(updatedHabits)
               }} />
-              {activeHabits.length > 0 && <AIInsights />}
             </div>
           </>
         )

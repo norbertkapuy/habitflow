@@ -31,6 +31,17 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { getHabits, getHabitEntries, saveHabits, saveHabitEntries } from '@/lib/storage'
 import { notificationService } from '@/lib/notifications'
 import AIService from '@/lib/ai-service'
@@ -80,6 +91,8 @@ export function SettingsView() {
   const [testingConnection, setTestingConnection] = useState(false)
   const [connectionResult, setConnectionResult] = useState<string | null>(null)
   const [connectionError, setConnectionError] = useState<string | null>(null)
+  const [showClearDataDialog, setShowClearDataDialog] = useState(false)
+  const [showResetSettingsDialog, setShowResetSettingsDialog] = useState(false)
 
   useEffect(() => {
     // Load settings from localStorage
@@ -225,19 +238,16 @@ export function SettingsView() {
     reader.readAsText(file)
   }
 
-  const clearAllData = () => {
-    if (confirm('Are you sure you want to delete all habits and data? This action cannot be undone.')) {
-      localStorage.removeItem('habits')
-      localStorage.removeItem('habit_entries')
-      localStorage.removeItem('habit-tracker-settings')
-      window.location.reload()
-    }
+  const handleClearAllData = () => {
+    localStorage.removeItem('habits')
+    localStorage.removeItem('habit_entries')
+    localStorage.removeItem('habit-tracker-settings')
+    window.location.reload()
   }
 
-  const resetSettings = () => {
-    if (confirm('Reset all settings to default values?')) {
-      saveSettings(defaultSettings)
-    }
+  const handleResetSettings = () => {
+    saveSettings(defaultSettings)
+    setShowResetSettingsDialog(false)
   }
 
   const setupRemindersForAllHabits = async () => {
@@ -921,23 +931,60 @@ export function SettingsView() {
             <div className="space-y-4">
               <h4 className="font-medium text-destructive">Danger Zone</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button 
-                  variant="outline" 
-                  onClick={resetSettings}
-                  className="flex items-center gap-2"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Reset Settings
-                </Button>
+                <AlertDialog open={showResetSettingsDialog} onOpenChange={setShowResetSettingsDialog}>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="flex items-center gap-2"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Reset Settings
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Reset Settings</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to reset all settings to default values? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleResetSettings}>
+                        Reset Settings
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
-                <Button 
-                  variant="destructive" 
-                  onClick={clearAllData}
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Clear All Data
-                </Button>
+                <AlertDialog open={showClearDataDialog} onOpenChange={setShowClearDataDialog}>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="destructive" 
+                      className="flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear All Data
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Clear All Data</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete all habits and data? This action cannot be undone and will permanently remove all your progress.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleClearAllData}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete All Data
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </CardContent>

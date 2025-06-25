@@ -73,19 +73,19 @@ export function HabitHeader({ searchTerm, onSearchChange, onAddHabit, currentVie
 
           {/* Search and Add for Habits View */}
           {currentView === 'habits' && (
-            <div className="flex items-center gap-2">
-              <div className="relative">
+            <div className="flex items-center gap-2 bg-muted/30 backdrop-blur-sm border border-border/50 rounded-xl p-1 shadow-sm">
+              <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => onSearchChange(e.target.value)}
-                  className="pl-10 w-40 sm:w-48 md:w-64 bg-muted/40 border-border/50 focus-visible:ring-1 focus-visible:ring-primary/30"
+                  className="pl-10 w-full bg-transparent border-0 focus-visible:ring-0"
                 />
               </div>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button onClick={onAddHabit} size="default" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+                  <Button onClick={onAddHabit} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
                     <Plus className="w-4 h-4 lg:mr-2" />
                     <span className="hidden lg:inline">Add Habit</span>
                   </Button>

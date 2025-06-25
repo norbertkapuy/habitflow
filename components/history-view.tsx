@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Calendar, CheckCircle, XCircle, Clock } from
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Habit } from '@/lib/types'
 import { getHabitEntries } from '@/lib/storage'
 
@@ -66,19 +67,20 @@ export function HistoryView({ habits, selectedHabitId }: HistoryViewProps) {
       case 'good': return 'bg-yellow-400'
       case 'partial': return 'bg-orange-400'
       case 'poor': return 'bg-red-300'
-      default: return 'bg-gray-100'
+      default: return 'bg-muted'
     }
   }
   
   const filteredHabits = selectedHabit ? habits.filter(h => h.id === selectedHabit) : habits
   
   return (
-    <motion.div 
-      className="space-y-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <TooltipProvider>
+      <motion.div 
+        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
       {/* Calendar Header */}
       <Card>
         <CardHeader>
@@ -162,75 +164,76 @@ export function HistoryView({ habits, selectedHabitId }: HistoryViewProps) {
               const isToday = isSameDay(date, new Date())
               
               return (
-                <motion.div
-                  key={date.toISOString()}
-                  className={`
-                    relative p-2 rounded-lg border cursor-pointer transition-all hover:scale-105
-                    ${isToday ? 'ring-2 ring-primary ring-offset-1' : ''}
-                    ${!isSameMonth(date, currentDate) ? 'opacity-30' : ''}
-                  `}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.01 }}
-                  whileHover={{ y: -2 }}
-                >
-                  {/* Day Number */}
-                  <div className="text-sm font-medium text-center mb-1">
-                    {format(date, 'd')}
-                  </div>
-                  
-                  {/* Completion Indicator */}
-                  <div className="space-y-1">
-                    {selectedHabit === null ? (
-                      /* Overall completion indicator */
-                      <div className="flex items-center justify-center">
-                        <div 
-                          className={`w-6 h-6 rounded-full ${getStatusColor(dayStatus.status)} flex items-center justify-center`}
-                        >
-                          {dayStatus.status === 'perfect' && (
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          )}
-                          {dayStatus.status === 'poor' && dayStatus.completed === 0 && (
-                            <XCircle className="w-3 h-3 text-white" />
-                          )}
-                          {dayStatus.status !== 'perfect' && dayStatus.status !== 'poor' && (
-                            <span className="text-xs font-bold text-white">
-                              {dayStatus.percentage}
-                            </span>
-                          )}
-                        </div>
+                <Tooltip key={date.toISOString()}>
+                  <TooltipTrigger asChild>
+                    <motion.div
+                      className={`
+                        relative p-2 rounded-lg border cursor-pointer transition-all hover:scale-105
+                        ${isToday ? 'ring-2 ring-primary ring-offset-1' : ''}
+                        ${!isSameMonth(date, currentDate) ? 'opacity-30' : ''}
+                      `}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.01 }}
+                      whileHover={{ y: -2 }}
+                    >
+                      {/* Day Number */}
+                      <div className="text-sm font-medium text-center mb-1">
+                        {format(date, 'd')}
                       </div>
-                    ) : (
-                      /* Single habit indicator */
-                      <div className="flex items-center justify-center">
-                        {(() => {
-                          const entry = getHabitEntryForDate(selectedHabit, date)
-                          const completed = entry?.completed || false
-                          return (
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              completed 
-                                ? 'bg-green-500 border-green-500' 
-                                : 'border-gray-300 bg-gray-100'
-                            }`}>
-                              {completed ? (
+                      
+                      {/* Completion Indicator */}
+                      <div className="space-y-1">
+                        {selectedHabit === null ? (
+                          /* Overall completion indicator */
+                          <div className="flex items-center justify-center">
+                            <div 
+                              className={`w-6 h-6 rounded-full ${getStatusColor(dayStatus.status)} flex items-center justify-center`}
+                            >
+                              {dayStatus.status === 'perfect' && (
                                 <CheckCircle className="w-3 h-3 text-white" />
-                              ) : (
-                                <div className="w-2 h-2 rounded-full bg-gray-400" />
+                              )}
+                              {dayStatus.status === 'poor' && dayStatus.completed === 0 && (
+                                <XCircle className="w-3 h-3 text-white" />
+                              )}
+                              {dayStatus.status !== 'perfect' && dayStatus.status !== 'poor' && (
+                                <span className="text-xs font-bold text-white">
+                                  {dayStatus.percentage}
+                                </span>
                               )}
                             </div>
-                          )
-                        })()}
+                          </div>
+                        ) : (
+                          /* Single habit indicator */
+                          <div className="flex items-center justify-center">
+                            {(() => {
+                              const entry = getHabitEntryForDate(selectedHabit, date)
+                              const completed = entry?.completed || false
+                              return (
+                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                                  completed 
+                                    ? 'bg-green-500 border-green-500' 
+                                    : 'border-border bg-muted'
+                                }`}>
+                                  {completed ? (
+                                    <CheckCircle className="w-3 h-3 text-white" />
+                                  ) : (
+                                    <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                                  )}
+                                </div>
+                              )
+                            })()}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Tooltip Info */}
+                    </motion.div>
+                  </TooltipTrigger>
                   {selectedHabit === null && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full bg-black text-white text-xs rounded px-2 py-1 opacity-0 hover:opacity-100 transition-opacity pointer-events-none z-10">
-                      {dayStatus.completed}/{dayStatus.total} completed
-                    </div>
+                    <TooltipContent>
+                      <p>{dayStatus.completed}/{dayStatus.total} completed</p>
+                    </TooltipContent>
                   )}
-                </motion.div>
+                </Tooltip>
               )
             })}
           </motion.div>
@@ -266,7 +269,7 @@ export function HistoryView({ habits, selectedHabitId }: HistoryViewProps) {
                 <span className="text-sm">No Habits (0%)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-gray-100 border-2 border-gray-300" />
+                <div className="w-4 h-4 rounded-full bg-muted border-2 border-border" />
                 <span className="text-sm">No Data</span>
               </div>
             </div>
@@ -277,7 +280,7 @@ export function HistoryView({ habits, selectedHabitId }: HistoryViewProps) {
                 <span className="text-sm">Completed</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-gray-100 border-2 border-gray-300" />
+                <div className="w-4 h-4 rounded-full bg-muted border-2 border-border" />
                 <span className="text-sm">Not Completed</span>
               </div>
             </div>
@@ -336,6 +339,7 @@ export function HistoryView({ habits, selectedHabitId }: HistoryViewProps) {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+      </motion.div>
+    </TooltipProvider>
   )
 }

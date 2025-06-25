@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from "@/components/theme-provider"
+import { CookieConsent } from '@/components/cookie-consent'
+import { ScrollToTop } from '@/components/scroll-to-top'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,8 +18,22 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning={true}>
+      <head />
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="relative flex min-h-screen flex-col">
+            <div className="flex-1">{children}</div>
+          </div>
+          <CookieConsent />
+          <ScrollToTop />
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

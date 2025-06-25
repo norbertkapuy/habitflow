@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   TrendingUp, 
   Target, 
@@ -88,21 +89,21 @@ export function AIInsights({ className }: AIInsightsProps) {
   const getInsightColor = (type: AIInsight['type']) => {
     switch (type) {
       case 'pattern':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+        return 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200 dark:border-blue-800'
       case 'suggestion':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+        return 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 border-green-200 dark:border-green-800'
       case 'correlation':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+        return 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border-purple-200 dark:border-purple-800'
       case 'prediction':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+        return 'bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300 border-orange-200 dark:border-orange-800'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+        return 'bg-muted/50 text-muted-foreground border-border'
     }
   }
 
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 0.8) return 'text-green-600 dark:text-green-400'
-    if (confidence >= 0.6) return 'text-yellow-600 dark:text-yellow-400'
+    if (confidence >= 0.6) return 'text-amber-600 dark:text-amber-400'
     return 'text-red-600 dark:text-red-400'
   }
 
@@ -179,32 +180,20 @@ export function AIInsights({ className }: AIInsightsProps) {
         )}
 
         <div className="w-full pr-1">
-          <div className="flex border-b mb-2">
-            {[
-              { key: 'overview', label: 'Overview' },
-              { key: 'patterns', label: 'Patterns' }
-            ].map((tab) => (
-              <Button
-                key={tab.key}
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setActiveTab(tab.key as any)
-                  if (tab.key === 'patterns') loadInsights('correlations')
-                }}
-                className={`rounded-none border-b-2 h-7 px-3 text-xs ${
-                  activeTab === tab.key 
-                    ? 'border-primary text-primary' 
-                    : 'border-transparent'
-                }`}
-              >
-                {tab.label}
-              </Button>
-            ))}
-          </div>
+          <Tabs 
+            value={activeTab} 
+            onValueChange={(value: string) => {
+              setActiveTab(value as 'overview' | 'patterns' | 'correlations' | 'predictions')
+              if (value === 'patterns') loadInsights('correlations')
+            }}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2 h-7 mb-2">
+              <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+              <TabsTrigger value="patterns" className="text-xs">Patterns</TabsTrigger>
+            </TabsList>
 
-          {activeTab === 'overview' && (
-            <div className="space-y-2">
+            <TabsContent value="overview" className="mt-2 space-y-2">
               <AnimatePresence>
                 {insights.map((insight, index) => (
                   <motion.div
@@ -217,7 +206,7 @@ export function AIInsights({ className }: AIInsightsProps) {
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1">
-                        <Badge variant="secondary" className={`${getInsightColor(insight.type)} text-xs h-4 px-1`}>
+                        <Badge variant="secondary" className={`${getInsightColor(insight.type)} text-xs h-4 px-1 border`}>
                           {getInsightIcon(insight.type)}
                           {insight.type}
                         </Badge>
@@ -231,11 +220,9 @@ export function AIInsights({ className }: AIInsightsProps) {
                   </motion.div>
                 ))}
               </AnimatePresence>
-            </div>
-          )}
+            </TabsContent>
 
-          {activeTab === 'patterns' && (
-            <div className="space-y-2">
+            <TabsContent value="patterns" className="mt-2 space-y-2">
               <AnimatePresence>
                 {groupedInsights.pattern?.map((insight, index) => (
                   <motion.div
@@ -261,8 +248,8 @@ export function AIInsights({ className }: AIInsightsProps) {
                   </div>
                 )}
               </AnimatePresence>
-            </div>
-          )}
+            </TabsContent>
+          </Tabs>
         </div>
 
         {!loading && insights.length === 0 && !error && (
