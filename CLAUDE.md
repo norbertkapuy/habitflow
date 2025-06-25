@@ -180,12 +180,12 @@ interface GroqModel {
   - High Contrast: WCAG compliant high contrast
 
 ### Navigation System
-- **Glassmorphism Header**: Modern frosted glass design with gradient backgrounds
-- **Centered Layout**: 2-row design with nav buttons centered, search below
+- **Compact Header**: Single-row layout with logo and title on the left, navigation and search on the right.
+- **Responsive Design**: Navigation buttons collapse to icons on smaller screens.
 - **View Modes**: habits | analytics | history | settings
 - **State Management**: `currentView` state controls which component renders
-- **Search Integration**: Only shows in habits view, centered with add button
-- **Motivational Strip**: Top-of-page quotes bar with auto-rotation every 15 seconds
+- **Search Integration**: Only shows in habits view.
+- **`shadcn/ui` Components**: Uses `ToggleGroup` for the main navigation.
 
 ### Settings Implementation
 - **Real-time Application**: All settings apply immediately via DOM class manipulation
@@ -899,6 +899,11 @@ const nextConfig = {
 - ✅ **Error Handling**: Graceful degradation and proper error responses
 
 ## Recent Updates & Improvements (Latest Sessions)
+
+### 🔧 **Header Refactor & `shadcn/ui` Consolidation (Current Session)**
+- **Header Redesign**: Refactored the main header to a compact, single-row layout for a more modern look.
+- **`shadcn/ui` Components**: Replaced all instances of native `<button>` and `<input>` elements with their `shadcn/ui` counterparts for a consistent design system.
+- **`ToggleGroup` Navigation**: Implemented the `ToggleGroup` component for the main view switcher, improving semantics and user experience.
 
 ### 🎯 **Habit Categories Optimization (Current Session)**
 - **Research-Based Categories**: Updated categories based on popular habit tracking apps research

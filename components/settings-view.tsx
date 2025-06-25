@@ -893,7 +893,9 @@ export function SettingsView() {
               </Button>
 
               <div className="relative">
-                <input
+                <Label htmlFor="import-file" className="sr-only">Import Data</Label>
+                <Input
+                  id="import-file"
                   type="file"
                   accept=".json"
                   onChange={importData}
@@ -904,9 +906,12 @@ export function SettingsView() {
                   variant="outline" 
                   disabled={isImporting}
                   className="w-full flex items-center gap-2"
+                  asChild
                 >
-                  <Upload className="w-4 h-4" />
-                  {isImporting ? 'Importing...' : 'Import Data'}
+                  <div>
+                    <Upload className="w-4 h-4" />
+                    {isImporting ? 'Importing...' : 'Import Data'}
+                  </div>
                 </Button>
               </div>
             </div>

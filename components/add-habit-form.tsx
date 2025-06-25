@@ -166,9 +166,11 @@ export function AddHabitForm({ onHabitAdded, isOpen: externalIsOpen, onOpenChang
             <div className="flex items-center gap-3">
               <div className="flex gap-2 flex-wrap">
                 {HABIT_COLORS.map(colorOption => (
-                  <button
+                  <Button
                     key={colorOption.value}
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => setColor(colorOption.value)}
                     className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
                       color === colorOption.value 

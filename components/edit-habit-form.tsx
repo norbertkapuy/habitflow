@@ -130,16 +130,16 @@ export function EditHabitForm({ habit, onClose, onUpdate }: EditHabitFormProps) 
                 <Label>Color</Label>
                 <div className="flex gap-2 flex-wrap">
                   {colors.map((c) => (
-                    <motion.button
+                    <Button
                       key={c}
                       type="button"
+                      variant="outline"
+                      size="icon"
                       className={`w-8 h-8 rounded-full border-2 ${
                         color === c ? 'border-foreground' : 'border-transparent'
                       }`}
                       style={{ backgroundColor: c }}
                       onClick={() => setColor(c)}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
                     />
                   ))}
                 </div>

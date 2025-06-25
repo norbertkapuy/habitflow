@@ -129,8 +129,10 @@ export function MotivationalQuotes({ className = "" }: MotivationalQuotesProps) 
             {/* Progress dots */}
             <div className="hidden sm:flex items-center gap-1">
               {motivationalQuotes.slice(0, 5).map((_, index) => (
-                <button
+                <Button
                   key={index}
+                  variant="ghost"
+                  size="icon"
                   onClick={() => {
                     setIsVisible(false)
                     setTimeout(() => {
@@ -138,7 +140,7 @@ export function MotivationalQuotes({ className = "" }: MotivationalQuotesProps) 
                       setIsVisible(true)
                     }, 400)
                   }}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                  className={`w-4 h-4 rounded-full transition-all duration-200 ${
                     index === currentQuote % 5
                       ? 'bg-primary/70'
                       : 'bg-primary/20 hover:bg-primary/40'
